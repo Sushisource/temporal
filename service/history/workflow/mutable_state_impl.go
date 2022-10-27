@@ -27,6 +27,7 @@ package workflow
 import (
 	"context"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"math/rand"
 	"time"
 
@@ -1822,6 +1823,53 @@ func (e *MutableStateImpl) addBinaryCheckSumIfNotExists(
 		return e.taskGenerator.GenerateUpsertVisibilityTask()
 	}
 	return nil
+}
+
+// Should be called every time a workflow task is completed with a build id making using of the task queue versioning
+// feature. It will ensure that the build id is set in `searchattribute.LatestBuildId` and added to
+// `searchattribute.BuildIds`, both of which are present in execution info search attributes.
+//
+// Returns true if search attributes were modified, and hence the caller should create a visibility task.
+func (e *MutableStateImpl) updateSearchAttrsWithMostRecentBuildId(buildIdFromCompletion string) (error, bool) {
+	exeInfo := e.executionInfo
+	didModifyAttrs := false
+
+	if exeInfo.SearchAttributes == nil {
+		exeInfo.SearchAttributes = make(map[string]*commonpb.Payload, 2)
+	}
+	latestIdPayload, err := searchattribute.EncodeValue(buildIdFromCompletion, enumspb.INDEXED_VALUE_TYPE_KEYWORD)
+	if err != nil {
+		return err, didModifyAttrs
+	}
+
+	exeInfo.SearchAttributes[searchattribute.LatestBuildId] = latestIdPayload
+	didModifyAttrs = true
+
+	allIdsEncoded := exeInfo.SearchAttributes[searchattribute.BuildIds]
+	if allIdsEncoded != nil {
+		decodedAllIds, err := searchattribute.DecodeValue(allIdsEncoded, enumspb.INDEXED_VALUE_TYPE_KEYWORD)
+		if err != nil {
+			return err, didModifyAttrs
+		}
+		allIds := decodedAllIds.([]string)
+		if !slices.Contains(allIds, buildIdFromCompletion) {
+			allIds = append(allIds, buildIdFromCompletion)
+			allIdsEncoded, err = searchattribute.EncodeValue(allIds, enumspb.INDEXED_VALUE_TYPE_KEYWORD)
+			if err != nil {
+				return err, didModifyAttrs
+			}
+			exeInfo.SearchAttributes[searchattribute.BuildIds] = allIdsEncoded
+		}
+	} else {
+		allIdsEncoded, err = searchattribute.EncodeValue(
+			[]string{buildIdFromCompletion}, enumspb.INDEXED_VALUE_TYPE_KEYWORD)
+		if err != nil {
+			return err, didModifyAttrs
+		}
+		exeInfo.SearchAttributes[searchattribute.BuildIds] = allIdsEncoded
+	}
+
+	return nil, didModifyAttrs
 }
 
 // TODO: we will release the restriction when reset API allow those pending

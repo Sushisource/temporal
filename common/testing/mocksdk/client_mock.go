@@ -212,6 +212,21 @@ func (mr *MockClientMockRecorder) GetSearchAttributes(arg0 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSearchAttributes", reflect.TypeOf((*MockClient)(nil).GetSearchAttributes), arg0)
 }
 
+// GetWorkerBuildIDOrdering mocks base method.
+func (m *MockClient) GetWorkerBuildIDOrdering(arg0 context.Context, arg1 *client.GetWorkerBuildIDOrderingOptions) (*client.WorkerBuildIDVersionSets, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetWorkerBuildIDOrdering", arg0, arg1)
+	ret0, _ := ret[0].(*client.WorkerBuildIDVersionSets)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetWorkerBuildIDOrdering indicates an expected call of GetWorkerBuildIDOrdering.
+func (mr *MockClientMockRecorder) GetWorkerBuildIDOrdering(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWorkerBuildIDOrdering", reflect.TypeOf((*MockClient)(nil).GetWorkerBuildIDOrdering), arg0, arg1)
+}
+
 // GetWorkflow mocks base method.
 func (m *MockClient) GetWorkflow(arg0 context.Context, arg1, arg2 string) client.WorkflowRun {
 	m.ctrl.T.Helper()
@@ -468,6 +483,20 @@ func (mr *MockClientMockRecorder) TerminateWorkflow(arg0, arg1, arg2, arg3 inter
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{arg0, arg1, arg2, arg3}, arg4...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TerminateWorkflow", reflect.TypeOf((*MockClient)(nil).TerminateWorkflow), varargs...)
+}
+
+// UpdateWorkerBuildIDOrdering mocks base method.
+func (m *MockClient) UpdateWorkerBuildIDOrdering(arg0 context.Context, arg1 *client.UpdateWorkerBuildIDOrderingOptions) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateWorkerBuildIDOrdering", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateWorkerBuildIDOrdering indicates an expected call of UpdateWorkerBuildIDOrdering.
+func (mr *MockClientMockRecorder) UpdateWorkerBuildIDOrdering(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateWorkerBuildIDOrdering", reflect.TypeOf((*MockClient)(nil).UpdateWorkerBuildIDOrdering), arg0, arg1)
 }
 
 // WorkflowService mocks base method.

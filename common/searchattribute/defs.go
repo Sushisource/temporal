@@ -48,6 +48,8 @@ const (
 	BatcherNamespace      = "BatcherNamespace"
 	BatcherUser           = "BatcherUser"
 	HistorySizeBytes      = "HistorySizeBytes"
+	LatestBuildId         = "LatestBuildId" // The most recent build ID associated with a workflow, if any
+	BuildIds              = "BuildIds"      // All the build IDs which have ever been associated with a workflow
 
 	TemporalNamespaceDivision = "TemporalNamespaceDivision"
 
@@ -93,6 +95,8 @@ var (
 		TemporalScheduledById:      enumspb.INDEXED_VALUE_TYPE_KEYWORD,
 		TemporalSchedulePaused:     enumspb.INDEXED_VALUE_TYPE_BOOL,
 		TemporalNamespaceDivision:  enumspb.INDEXED_VALUE_TYPE_KEYWORD,
+		LatestBuildId:              enumspb.INDEXED_VALUE_TYPE_KEYWORD,
+		BuildIds:                   enumspb.INDEXED_VALUE_TYPE_KEYWORD,
 	}
 
 	// reserved are internal field names that can't be used as search attribute names.
